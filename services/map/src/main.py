@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import selectinload
+from pathlib import Path
 from uuid import UUID
 
 from src.config import settings
@@ -27,6 +30,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+static_dir = Path(__file__).parent.parent / "static"
+static_dir.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 # === Floor Plans ===
 
 @app.get("/api/v1/maps", response_model=list[FloorPlanSummary])
@@ -40,12 +47,21 @@ async def create_floor_plan(payload: FloorPlanCreate, db: AsyncSession = Depends
     db.add(fp)
     await db.commit()
     await db.refresh(fp)
-    return fp
+    
+    # Eagerly load relationships
+    result = await db.execute(
+        select(FloorPlan)
+        .options(selectinload(FloorPlan.zones), selectinload(FloorPlan.access_points))
+        .where(FloorPlan.id == fp.id)
+    )
+    return result.scalar_one()
 
 @app.get("/api/v1/maps/{map_id}", response_model=FloorPlanResponse)
 async def get_floor_plan(map_id: UUID, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
-        select(FloorPlan).where(FloorPlan.id == map_id)
+        select(FloorPlan)
+        .options(selectinload(FloorPlan.zones), selectinload(FloorPlan.access_points))
+        .where(FloorPlan.id == map_id)
     )
     fp = result.scalar_one_or_none()
     if not fp:

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { Link} from 'react-router-dom';
 
 const api = axios.create({
   baseURL: 'http://localhost:8003',
@@ -35,12 +36,12 @@ export function FloorPlansPage() {
           <h2 className="text-xl font-semibold">{fp.name}</h2>
           <p className="text-gray-600">{fp.building} · Floor {fp.floor}</p>
           <p className="text-sm text-gray-500">ID: {fp.id}</p>
-          <a 
-            href={`/floor-plan/${fp.id}`}
-            className="text-blue-600 hover:underline text-sm"
+          <Link 
+            to={`/floor-plan/${fp.id}`}
+              className="text-blue-600 hover:underline text-sm"
           >
-            View details →
-          </a>
+            View map →
+          </Link>
         </div>
       ))}
     </div>

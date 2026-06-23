@@ -1,0 +1,442 @@
+openapi: 3.1.0
+info:
+  title: FloorSense Map Service
+  description: Floor plan and zone management
+  version: 0.1.0
+paths:
+  /api/v1/maps:
+    get:
+      summary: List Floor Plans
+      operationId: list_floor_plans_api_v1_maps_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/FloorPlanSummary'
+                type: array
+                title: Response List Floor Plans Api V1 Maps Get
+    post:
+      summary: Create Floor Plan
+      operationId: create_floor_plan_api_v1_maps_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FloorPlanCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorPlanResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/maps/{map_id}:
+    get:
+      summary: Get Floor Plan
+      operationId: get_floor_plan_api_v1_maps__map_id__get
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Map Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FloorPlanResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/maps/{map_id}/zones:
+    post:
+      summary: Create Zone
+      operationId: create_zone_api_v1_maps__map_id__zones_post
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Map Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZoneCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZoneResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      summary: List Zones
+      operationId: list_zones_api_v1_maps__map_id__zones_get
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Map Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ZoneResponse'
+                title: Response List Zones Api V1 Maps  Map Id  Zones Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/maps/{map_id}/aps:
+    post:
+      summary: Create Ap
+      operationId: create_ap_api_v1_maps__map_id__aps_post
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Map Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessPointCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessPointResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      summary: List Aps
+      operationId: list_aps_api_v1_maps__map_id__aps_get
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Map Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessPointResponse'
+                title: Response List Aps Api V1 Maps  Map Id  Aps Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    AccessPointCreate:
+      properties:
+        mac_address:
+          type: string
+          title: Mac Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        x:
+          type: number
+          title: X
+        y:
+          type: number
+          title: Y
+      type: object
+      required:
+      - mac_address
+      - x
+      - y
+      title: AccessPointCreate
+    AccessPointResponse:
+      properties:
+        mac_address:
+          type: string
+          title: Mac Address
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        x:
+          type: number
+          title: X
+        y:
+          type: number
+          title: Y
+        id:
+          type: string
+          format: uuid
+          title: Id
+        floor_plan_id:
+          type: string
+          format: uuid
+          title: Floor Plan Id
+      type: object
+      required:
+      - mac_address
+      - x
+      - y
+      - id
+      - floor_plan_id
+      title: AccessPointResponse
+    FloorPlanCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        building:
+          type: string
+          title: Building
+        floor:
+          type: string
+          title: Floor
+        svg_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Svg Url
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        width:
+          type: number
+          title: Width
+        height:
+          type: number
+          title: Height
+      type: object
+      required:
+      - name
+      - building
+      - floor
+      - width
+      - height
+      title: FloorPlanCreate
+    FloorPlanResponse:
+      properties:
+        name:
+          type: string
+          title: Name
+        building:
+          type: string
+          title: Building
+        floor:
+          type: string
+          title: Floor
+        svg_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Svg Url
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        width:
+          type: number
+          title: Width
+        height:
+          type: number
+          title: Height
+        id:
+          type: string
+          format: uuid
+          title: Id
+        zones:
+          items:
+            $ref: '#/components/schemas/ZoneResponse'
+          type: array
+          title: Zones
+          default: []
+        access_points:
+          items:
+            $ref: '#/components/schemas/AccessPointResponse'
+          type: array
+          title: Access Points
+          default: []
+      type: object
+      required:
+      - name
+      - building
+      - floor
+      - width
+      - height
+      - id
+      title: FloorPlanResponse
+    FloorPlanSummary:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        building:
+          type: string
+          title: Building
+        floor:
+          type: string
+          title: Floor
+      type: object
+      required:
+      - id
+      - name
+      - building
+      - floor
+      title: FloorPlanSummary
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ZoneCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        zone_type:
+          type: string
+          title: Zone Type
+          default: general
+        polygon:
+          items:
+            items:
+              type: number
+            type: array
+          type: array
+          title: Polygon
+          description: Array of [x, y] coordinates
+      type: object
+      required:
+      - name
+      - polygon
+      title: ZoneCreate
+    ZoneResponse:
+      properties:
+        name:
+          type: string
+          title: Name
+        zone_type:
+          type: string
+          title: Zone Type
+          default: general
+        polygon:
+          items:
+            items:
+              type: number
+            type: array
+          type: array
+          title: Polygon
+          description: Array of [x, y] coordinates
+        id:
+          type: string
+          format: uuid
+          title: Id
+        floor_plan_id:
+          type: string
+          format: uuid
+          title: Floor Plan Id
+      type: object
+      required:
+      - name
+      - polygon
+      - id
+      - floor_plan_id
+      title: ZoneResponse

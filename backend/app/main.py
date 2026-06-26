@@ -3,8 +3,7 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.modules.map.router import router as map_router
-from app.modules.location.router import router as location_router
-from app.modules.location.router import router as ws_router
+from app.modules.location.router import router as location_router, ws_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

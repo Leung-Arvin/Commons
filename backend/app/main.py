@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.modules.map.router import router as map_router
+from app.modules.location.router import router as location_router, ws_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,6 +18,8 @@ app = FastAPI(
 )
 
 app.include_router(map_router, prefix="/api/v1")
+app.include_router(location_router, prefix="/api/v1")
+app.include_router(ws_router, prefix="/api/v1")  
 
 @app.get("/health")
 async def health():

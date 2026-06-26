@@ -11,3 +11,14 @@ test:
 
 lint:
 	cd backend && ruff check . && ruff format --check .
+
+.PHONY: migrate migrate-gen migrate-down
+
+migrate-gen:
+	cd backend && alembic revision --autogenerate -m "$(msg)"
+
+migrate:
+	cd backend && alembic upgrade head
+
+migrate-down:
+	cd backend && alembic downgrade -1

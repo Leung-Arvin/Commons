@@ -1,17 +1,34 @@
-version: '3.8'
-
 services:
-  # Infrastructure
-  postgres:
-    image: timescale/timescaledb:latest-pg15
+  backend:
+    build: ../backend
+    ports:
+      - "8000:8000"
     environment:
-      POSTGRES_USER: floorsense
-      POSTGRES_PASSWORD: floorsense
-      POSTGRES_DB: floorsense
+      OPENSACES_DATABASE_URL: postgresql+asyncpg://user:pass@postgres:5432/openspaces
+      OPENSACES_REDIS_URL: redis://redis:6379
+      OPENSACES_KAFKA_BROKER: redpanda:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  postgres:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: openspaces
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d openspaces"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -24,55 +41,13 @@ services:
       - redpanda
       - start
       - --smp 1
-      - --memory 512M
+      - --memory 256M
       - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:9092
     ports:
-      - "19092:19092"
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    command: start-dev
-    ports:
-      - "8080:8080"
-
-  # Application services (add these as you build them)
-  # location:
-  #   build: ../services/location
-  #   ports:
-  #     - "8001:8001"
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #     - redpanda
-
-  # analytics:
-  #   build: ../services/analytics
-  #   ports:
-  #     - "8002:8002"
-  #   depends_on:
-  #     - postgres
-  #     - redpanda
-
-  # map:
-  #   build: ../services/map
-  #   ports:
-  #     - "8003:8003"
-  #   depends_on:
-  #     - postgres
-
-  # frontend:
-  #   build: ../frontend
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - location
-  #     - analytics
-  #     - map
+      - "9092:9092"
 
 volumes:
-  postgres_data:
+  pgdata:

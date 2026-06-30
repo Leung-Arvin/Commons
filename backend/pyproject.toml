@@ -1,5 +1,5 @@
 [project]
-name = "openspaces-backend"
+name = "commons-backend"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
@@ -40,3 +40,6 @@ addopts = "-v --cov=app --cov-report=term-missing"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# Alembic-generated migration files follow their own template conventions
+# (side-effect model imports in env.py, boilerplate in version stubs).
+extend-exclude = ["app/db/migrations"]

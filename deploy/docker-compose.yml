@@ -4,9 +4,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      OPENSACES_DATABASE_URL: postgresql+asyncpg://user:pass@postgres:5432/openspaces
-      OPENSACES_REDIS_URL: redis://redis:6379
-      OPENSACES_KAFKA_BROKER: redpanda:9092
+      COMMONS_DATABASE_URL: postgresql+asyncpg://user:pass@postgres:5432/commons
+      COMMONS_REDIS_URL: redis://redis:6379
+      COMMONS_KAFKA_BROKER: redpanda:9092
     depends_on:
       postgres:
         condition: service_healthy
@@ -19,13 +19,13 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
-      POSTGRES_DB: openspaces
+      POSTGRES_DB: commons
     ports:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d openspaces"]
+      test: ["CMD-SHELL", "pg_isready -U user -d commons"]
       interval: 5s
       timeout: 5s
       retries: 5

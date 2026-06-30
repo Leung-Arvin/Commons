@@ -1,0 +1,43 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="markFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3FE8D2"/>
+      <stop offset="100%" stop-color="#1B8C82"/>
+    </linearGradient>
+    <linearGradient id="panelShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#04201E" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#04201E" stop-opacity="0.16"/>
+    </linearGradient>
+  </defs>
+
+  <!-- base badge -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#markFill)"/>
+
+  <!-- folded map panels (three panels, middle one set slightly forward) -->
+  <g opacity="0.95">
+    <rect x="18" y="28" width="31" height="72" rx="4" fill="#04201E" fill-opacity="0.18"/>
+    <rect x="49" y="24" width="30" height="80" rx="4" fill="#04201E" fill-opacity="0.06"/>
+    <rect x="79" y="28" width="31" height="72" rx="4" fill="#04201E" fill-opacity="0.24"/>
+  </g>
+
+  <!-- fold crease lines -->
+  <line x1="49.5" y1="24" x2="49.5" y2="104" stroke="#04201E" stroke-opacity="0.42" stroke-width="3.5"/>
+  <line x1="78.5" y1="24" x2="78.5" y2="104" stroke="#04201E" stroke-opacity="0.42" stroke-width="3.5"/>
+
+  <!-- contour / trail line running across all three panels -->
+  <path d="M22 80 C34 66, 40 90, 50 74 S66 48, 79 62 S98 82, 106 56"
+        fill="none" stroke="#04201E" stroke-opacity="0.6" stroke-width="5.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- secondary thinner contour for depth -->
+  <path d="M22 58 C36 50, 46 62, 58 54 S78 42, 106 48"
+        fill="none" stroke="#04201E" stroke-opacity="0.28" stroke-width="2.4"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- the "commons": a marked gathering point on the map -->
+  <g transform="translate(64,70)">
+    <path d="M0,-15 C8,-15 14,-9 14,-2 C14,7 0,19 0,19 C0,19 -14,7 -14,-2 C-14,-9 -8,-15 0,-15 Z"
+          fill="#04201E"/>
+    <circle r="4.6" cy="-2" fill="url(#markFill)"/>
+  </g>
+</svg>

@@ -9,6 +9,7 @@ from alembic import context
 
 # Import your Base and all models so metadata is populated
 from app.database import Base
+from app.db.models import AccessPoint, Asset, FloorPlan, Zone  # noqa: F401 — register models
 from app.config import settings
 
 # this is the Alembic Config object

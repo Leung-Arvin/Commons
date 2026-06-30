@@ -10,8 +10,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-/backend/lib/
-/backend/lib64/
+lib/
+lib64/
+# The Python `lib/` rule above also matches the frontend's source dir; keep it tracked.
+!frontend/src/lib/
 parts/
 sdist/
 var/

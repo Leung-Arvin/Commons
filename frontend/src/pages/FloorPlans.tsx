@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { Link} from 'react-router-dom';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8003',
-});
+import { api } from '../lib/api';
 
 interface FloorPlanSummary {
   id: string;

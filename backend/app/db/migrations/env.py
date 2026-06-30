@@ -9,8 +9,6 @@ from alembic import context
 
 # Import your Base and all models so metadata is populated
 from app.database import Base
-from app.db.models import FloorPlan  # <-- import every model here
-from app.db.models import Asset
 from app.config import settings
 
 # this is the Alembic Config object

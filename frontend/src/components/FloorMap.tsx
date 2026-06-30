@@ -1,13 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:8003',
-});
+import { api, API_BASE_URL } from '../lib/api';
 
 interface FloorPlan {
   id: string;
   name: string;
+  building: string;
+  floor: string;
   svg_url: string | null;
   image_url: string | null;
   width: number;
@@ -59,7 +57,7 @@ export function FloorMap({ mapId }: { mapId: string }) {
         {/* Floor plan image */}
         {imageUrl && (
           <img
-            src={`http://localhost:8003${imageUrl}`}
+            src={`${API_BASE_URL}${imageUrl}`}
             alt={fp.name}
             className="absolute inset-0 w-full h-full object-contain"
           />

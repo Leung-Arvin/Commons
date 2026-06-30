@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from uuid import uuid4
-from httpx import AsyncClient
 
 @pytest.mark.asyncio
 async def test_list_assets_empty(client):

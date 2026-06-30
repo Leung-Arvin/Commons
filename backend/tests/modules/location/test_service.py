@@ -1,4 +1,3 @@
-import pytest
 from app.modules.location.service import calculate_position
 
 def test_calculate_position_with_three_aps():

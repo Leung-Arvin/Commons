@@ -1,4 +1,4 @@
-# FloorSense
+# Commons
 
 Open-source indoor location and space utilization platform.
 

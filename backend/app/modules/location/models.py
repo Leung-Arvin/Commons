@@ -8,6 +8,18 @@ class AssetCreate(BaseModel):
     mac_address: str
     asset_type: str = "unknown"
 
+class AssetUpdate(BaseModel):
+    name: Optional[str] = None
+    asset_type: Optional[str] = None
+
+class APReading(BaseModel):
+    mac_address: str
+    rssi: float
+
+class LocateRequest(BaseModel):
+    floor_plan_id: UUID
+    readings: list[APReading]
+
 class AssetRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     

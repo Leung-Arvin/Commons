@@ -1,0 +1,211 @@
+/* Commons map — design tokens + chrome.
+ * Ported verbatim from the design handoff (CommonsMap.jsx <style> block); the
+ * only additions are the `.cx-svg-*` rules at the bottom, because real zones are
+ * arbitrary polygons rendered in an SVG stage rather than the prototype's
+ * absolutely-positioned div rectangles.
+ *
+ * To re-skin: edit the :root block only. Nothing else should need touching. */
+
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #F6F8F7; --bg-deep: #ECEFEE; --glass: #FFFFFFCC; --glass-solid: #FFFFFF; --line: #DCE3E1; --line-soft: #E6EBE9;
+  --ink: #0D1512; --ink-dim: #41544F; --ink-faint: #6B7D78;
+  --teal: #0E9C8C; --teal-soft: #0B7A6D;
+  --occ-vacant: #A9B6B2; --occ-low: #2FAE6F; --occ-mod: #D2972C; --occ-high: #DD7430; --occ-full: #D8485F;
+  --r-lg: 16px; --r-md: 12px; --r-sm: 9px;
+  --shadow: 0 10px 28px -10px rgba(20, 40, 35, .18), 0 2px 8px -2px rgba(20, 40, 35, .10);
+  --shadow-sm: 0 6px 16px -6px rgba(20, 40, 35, .18);
+}
+.cx-root * { box-sizing: border-box; }
+.cx-root {
+  font-family: 'Atkinson Hyperlegible', sans-serif; color: var(--ink); font-size: 13px;
+  height: 100vh; position: relative; overflow: hidden;
+  background: radial-gradient(120% 120% at 30% 10%, #FFFFFF 0%, var(--bg) 45%, var(--bg-deep) 100%);
+}
+.cx-display { font-family: 'Unbounded', sans-serif; font-weight: 700; letter-spacing: -.01em; }
+.cx-mono { font-family: 'Spline Sans Mono', monospace; }
+
+/* ---------- FULL-BLEED MAP ---------- */
+.cx-map {
+  position: absolute; inset: 0; overflow: hidden;
+  background-image: radial-gradient(circle at 1px 1px, rgba(20, 40, 35, .08) 1px, transparent 0);
+  background-size: 26px 26px;
+}
+
+.cx-pin { position: absolute; transform: translate(-50%, -50%); }
+.cx-pin .core {
+  width: 10px; height: 10px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 0 rgba(45, 212, 191, .5);
+  animation: cxPulse 2.2s infinite;
+}
+@keyframes cxPulse { 0% { box-shadow: 0 0 0 0 rgba(45, 212, 191, .5); } 70% { box-shadow: 0 0 0 13px rgba(45, 212, 191, 0); } 100% { box-shadow: 0 0 0 0 rgba(45, 212, 191, 0); } }
+
+/* ---------- FLOATING ELEMENTS (shared) ---------- */
+.cx-float {
+  position: absolute; background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); z-index: 10;
+}
+
+/* TOP BAR */
+.cx-top {
+  position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 14px; padding: 11px 20px;
+  border-radius: 0; border: none; border-bottom: 1px solid var(--line); background: var(--glass-solid);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: none; z-index: 10;
+}
+.cx-brand { display: flex; align-items: center; gap: 9px; }
+.cx-mark {
+  width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(150deg, var(--teal), var(--teal-soft));
+  display: flex; align-items: center; justify-content: center; color: #04201E;
+}
+.cx-brand-name { font-size: 15px; }
+.cx-tag {
+  font-family: 'Spline Sans Mono'; font-size: 8.5px; letter-spacing: .12em; color: var(--teal);
+  border: 1px solid var(--teal-soft); border-radius: 4px; padding: 1px 5px;
+}
+.cx-grip { width: 1px; height: 22px; background: var(--line); margin: 0 2px; }
+.cx-floors { display: flex; gap: 3px; flex-wrap: wrap; }
+.cx-floor {
+  font-family: 'Spline Sans Mono'; font-size: 12px; color: var(--ink-dim); background: transparent; border: 1px solid transparent;
+  border-radius: 7px; padding: 5px 11px; cursor: pointer;
+}
+.cx-floor:hover { color: var(--ink); }
+.cx-floor.active { background: rgba(45, 212, 191, .12); color: var(--teal); border-color: var(--teal-soft); }
+.cx-top-right { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+.cx-search {
+  display: flex; align-items: center; gap: 8px; background: rgba(20, 40, 35, .05); border: 1px solid var(--line); border-radius: 9px;
+  padding: 7px 12px; color: var(--ink-dim); font-family: 'Spline Sans Mono'; font-size: 11.5px; width: 210px;
+}
+.cx-search input {
+  border: none; outline: none; background: transparent; color: var(--ink); font-family: 'Spline Sans Mono';
+  font-size: 11.5px; width: 100%;
+}
+.cx-search input::placeholder { color: var(--ink-dim); }
+.cx-clock { display: flex; align-items: center; gap: 7px; font-family: 'Spline Sans Mono'; font-size: 11.5px; color: var(--ink-dim); }
+.cx-clock .live { width: 6px; height: 6px; border-radius: 50%; background: var(--occ-low); animation: cxBlink 1.6s infinite; }
+@keyframes cxBlink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+.cx-roles { display: flex; background: rgba(20, 40, 35, .05); border: 1px solid var(--line); border-radius: 18px; padding: 3px; gap: 2px; }
+.cx-roles button {
+  font-family: 'Spline Sans Mono'; font-size: 11px; border: none; background: transparent; color: var(--ink-dim);
+  padding: 6px 13px; border-radius: 14px; cursor: pointer;
+}
+.cx-roles button.active { background: var(--teal); color: #04201E; font-weight: 600; }
+.cx-ibtn {
+  width: 32px; height: 32px; border-radius: 8px; background: transparent; border: 1px solid transparent; color: var(--ink-dim);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.cx-ibtn:hover { color: var(--ink); border-color: var(--line); }
+
+/* LEFT TOOL DOCK */
+.cx-dock-left { left: 16px; top: 50%; transform: translateY(-50%); padding: 7px; display: flex; flex-direction: column; gap: 4px; }
+.cx-dock-label {
+  font-family: 'Spline Sans Mono'; font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint);
+  padding: 5px 8px 3px;
+}
+.cx-dockbtn {
+  display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 10px; cursor: pointer; color: var(--ink-dim);
+  background: transparent; border: none; width: 100%; white-space: nowrap;
+}
+.cx-dockbtn:hover { background: rgba(20, 40, 35, .05); color: var(--ink); }
+.cx-dockbtn.active { background: rgba(45, 212, 191, .12); color: var(--teal); }
+.cx-dockbtn .lab { font-size: 13px; }
+.cx-dockbtn svg { flex-shrink: 0; }
+
+/* LEGEND DOCK */
+.cx-legend { left: 16px; bottom: 16px; padding: 11px 13px; }
+.cx-legend .ttl { font-family: 'Spline Sans Mono'; font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px; }
+.cx-legend-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 12px; color: var(--ink-dim); }
+.cx-legend-row .sw { width: 11px; height: 11px; border-radius: 3px; }
+
+/* ZOOM CLUSTER */
+.cx-zoom { right: 16px; bottom: 16px; padding: 6px; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+.cx-zoom button {
+  width: 34px; height: 34px; border-radius: 9px; background: transparent; border: 1px solid transparent; color: var(--ink-dim);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.cx-zoom button:hover { color: var(--teal); background: rgba(20, 40, 35, .05); }
+.cx-zoom .lvl { font-family: 'Spline Sans Mono'; font-size: 9px; color: var(--ink-faint); }
+
+/* CARTOGRAPHER TOOL PALETTE */
+.cx-palette { top: 78px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 6px; }
+.cx-pal-btn {
+  display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: 9px; cursor: pointer; color: var(--ink);
+  background: transparent; border: none; font-size: 12px; font-family: 'Atkinson Hyperlegible'; white-space: nowrap;
+}
+.cx-pal-btn:hover { background: rgba(45, 212, 191, .1); color: var(--teal); }
+.cx-pal-btn:disabled { opacity: .55; cursor: not-allowed; }
+.cx-pal-btn:disabled:hover { background: transparent; color: var(--ink); }
+.cx-pal-sep { width: 1px; height: 20px; background: var(--line); margin: 0 2px; }
+.cx-pal-btn.primary { background: var(--teal); color: #04201E; font-weight: 700; }
+.cx-pal-btn.primary:hover { filter: brightness(1.08); color: #04201E; }
+
+/* INSPECTOR */
+.cx-inspect { right: 16px; top: 78px; width: 288px; padding: 0; overflow: hidden; animation: cxSlide .28s cubic-bezier(.2, 1, .3, 1) both; }
+@keyframes cxSlide { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+.cx-ins-head { display: flex; align-items: flex-start; gap: 9px; padding: 14px 14px 11px; border-bottom: 1px solid var(--line-soft); }
+.cx-ins-head .ic { width: 30px; height: 30px; border-radius: 8px; background: rgba(45, 212, 191, .12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cx-ins-head .nm { font-family: 'Unbounded'; font-size: 14px; font-weight: 700; }
+.cx-ins-head .sub { font-family: 'Spline Sans Mono'; font-size: 10px; color: var(--ink-dim); margin-top: 3px; }
+.cx-ins-close { margin-left: auto; background: transparent; border: none; color: var(--ink-dim); cursor: pointer; padding: 2px; }
+.cx-ins-close:hover { color: var(--ink); }
+.cx-ins-body { padding: 12px 14px; }
+.cx-kv { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--line-soft); }
+.cx-kv .k { color: var(--ink-dim); }
+.cx-kv .v { font-family: 'Spline Sans Mono'; color: var(--teal); }
+.cx-occbar { height: 6px; border-radius: 4px; background: rgba(20, 40, 35, .07); overflow: hidden; margin-top: 11px; }
+.cx-occbar .f { height: 100%; border-radius: 4px; }
+.cx-crud { display: flex; gap: 7px; padding: 0 14px 14px; }
+.cx-crud button {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: 'Spline Sans Mono'; font-size: 10.5px;
+  padding: 8px 0; border-radius: 8px; border: 1px solid var(--line); background: rgba(20, 40, 35, .03); color: var(--ink); cursor: pointer;
+}
+.cx-crud button:hover { border-color: var(--teal-soft); color: var(--teal); }
+.cx-crud button.danger:hover { border-color: var(--occ-full); color: var(--occ-full); }
+.cx-crud button:disabled { opacity: .5; cursor: not-allowed; }
+.cx-crud button:disabled:hover { border-color: var(--line); color: var(--ink); }
+
+/* STATUS CHIP CLUSTER */
+.cx-status { bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 5px; }
+.cx-chip { display: flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 11px; }
+.cx-chip .ck {
+  display: flex; align-items: center; gap: 5px; font-family: 'Spline Sans Mono'; font-size: 8.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-faint);
+}
+.cx-chip .cv { font-family: 'Spline Sans Mono'; font-size: 12px; color: var(--ink); }
+.cx-chip + .cx-chip { border-left: 1px solid var(--line-soft); }
+
+.cx-hint {
+  position: absolute; top: 78px; left: 50%; transform: translateX(-50%); z-index: 9;
+  font-family: 'Spline Sans Mono'; font-size: 10.5px; color: var(--ink-faint); background: var(--glass); backdrop-filter: blur(10px);
+  border: 1px solid var(--line-soft); border-radius: 20px; padding: 6px 14px; text-align: center;
+}
+
+/* Placeholder-data badge — surfaced because occupancy/heatmap/people metrics
+ * are not backed by real data yet (see DESIGN_HANDOFF stubs). */
+.cx-demobadge {
+  position: absolute; top: 78px; right: 16px; z-index: 9;
+  font-family: 'Spline Sans Mono'; font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--occ-mod); background: var(--glass); backdrop-filter: blur(10px);
+  border: 1px solid var(--line-soft); border-radius: 20px; padding: 5px 11px;
+}
+
+.cx-empty {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  color: var(--ink-dim); text-align: center; padding: 0 20px;
+}
+.cx-empty .big { font-family: 'Unbounded'; font-weight: 700; font-size: 18px; color: var(--ink); }
+.cx-empty .small { font-family: 'Spline Sans Mono'; font-size: 12px; color: var(--ink-faint); max-width: 360px; }
+
+.cx-root ::-webkit-scrollbar { width: 7px; }
+.cx-root ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 6px; }
+
+/* ---------- SVG MAP STAGE (real polygon data) ---------- */
+.cx-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cx-svg-zone { cursor: pointer; transition: filter .15s; }
+.cx-svg-zone:hover { filter: brightness(1.12); }
+.cx-svg-zone.sel { filter: drop-shadow(0 0 8px rgba(14, 156, 140, .55)); }
+.cx-svg-zonelabel { font-family: 'Atkinson Hyperlegible'; font-weight: 700; pointer-events: none; }
+.cx-svg-count { font-family: 'Spline Sans Mono'; pointer-events: none; }
+.cx-svg-asset { cursor: pointer; }
+.cx-svg-ap { cursor: pointer; }
+.cx-svg-ap .ring { animation: cxRing 2.2s ease-out infinite; transform-origin: center; }
+@keyframes cxRing { 0% { opacity: .55; r: 4px; } 70% { opacity: 0; r: 18px; } 100% { opacity: 0; r: 18px; } }

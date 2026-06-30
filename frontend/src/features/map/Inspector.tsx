@@ -1,6 +1,6 @@
 import { Box, Hexagon, Move, Pencil, Radio, Trash2, X } from 'lucide-react';
 
-import type { Asset, FloorPlanDetail, Selection } from '../../lib/types';
+import type { AccessPoint, Asset, FloorPlanDetail, Selection, Zone } from '../../lib/types';
 import { OCC, apActivity, occBar, zoneMetrics } from '../../lib/metrics';
 
 interface Props {
@@ -11,6 +11,10 @@ interface Props {
   onClose: () => void;
   onEditAsset: (a: Asset) => void;
   onDeleteAsset: (a: Asset) => void;
+  onEditZone: (z: Zone) => void;
+  onDeleteZone: (z: Zone) => void;
+  onEditAccessPoint: (ap: AccessPoint) => void;
+  onDeleteAccessPoint: (ap: AccessPoint) => void;
   onStub: (label: string) => void;
 }
 
@@ -25,7 +29,10 @@ function relativeTime(iso: string | null): string {
   return `${Math.round(secs / 86400)} d ago`;
 }
 
-export function Inspector({ selection, fp, assets, isCart, onClose, onEditAsset, onDeleteAsset, onStub }: Props) {
+export function Inspector({
+  selection, fp, assets, isCart, onClose, onEditAsset, onDeleteAsset,
+  onEditZone, onDeleteZone, onEditAccessPoint, onDeleteAccessPoint, onStub,
+}: Props) {
   if (!selection) return null;
 
   if (selection.type === 'zone') {
@@ -50,10 +57,10 @@ export function Inspector({ selection, fp, assets, isCart, onClose, onEditAsset,
         </div>
         {isCart && (
           <div className="cx-crud">
-            {/* No backend update/delete for zones yet — announce instead of pretending. */}
-            <button onClick={() => onStub('Edit zone')}><Pencil size={12} /> Edit</button>
+            {/* Edit/Delete are live; Reshape needs canvas polygon editing, still a stub. */}
+            <button onClick={() => onEditZone(z)}><Pencil size={12} /> Edit</button>
             <button onClick={() => onStub('Reshape zone')}><Move size={12} /> Reshape</button>
-            <button className="danger" onClick={() => onStub('Delete zone')}><Trash2 size={12} /> Delete</button>
+            <button className="danger" onClick={() => onDeleteZone(z)}><Trash2 size={12} /> Delete</button>
           </div>
         )}
       </div>
@@ -80,9 +87,10 @@ export function Inspector({ selection, fp, assets, isCart, onClose, onEditAsset,
         </div>
         {isCart && (
           <div className="cx-crud">
-            <button onClick={() => onStub('Edit AP')}><Pencil size={12} /> Edit</button>
+            {/* Edit/Remove are live; Move needs canvas drag-to-position, still a stub. */}
+            <button onClick={() => onEditAccessPoint(ap)}><Pencil size={12} /> Edit</button>
             <button onClick={() => onStub('Move AP')}><Move size={12} /> Move</button>
-            <button className="danger" onClick={() => onStub('Remove AP')}><Trash2 size={12} /> Remove</button>
+            <button className="danger" onClick={() => onDeleteAccessPoint(ap)}><Trash2 size={12} /> Remove</button>
           </div>
         )}
       </div>

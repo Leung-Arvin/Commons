@@ -10,6 +10,12 @@ class ZoneCreate(BaseModel):
     polygon: list[list[float]]
 
 
+class ZoneUpdate(BaseModel):
+    name: Optional[str] = None
+    zone_type: Optional[str] = None
+    polygon: Optional[list[list[float]]] = None
+
+
 class ZoneResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -25,6 +31,13 @@ class AccessPointCreate(BaseModel):
     name: Optional[str] = None
     x: float
     y: float
+
+
+class AccessPointUpdate(BaseModel):
+    mac_address: Optional[str] = None
+    name: Optional[str] = None
+    x: Optional[float] = None
+    y: Optional[float] = None
 
 
 class AccessPointResponse(BaseModel):

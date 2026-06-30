@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import AccessPoint, FloorPlan, Zone
 from app.modules.map.models import (
     AccessPointCreate,
+    AccessPointUpdate,
     FloorPlanCreate,
     FloorPlanUpdate,
     ZoneCreate,
+    ZoneUpdate,
 )
 
 async def list_floor_plans(db: AsyncSession) -> list[FloorPlan]:
@@ -55,6 +57,28 @@ async def list_zones(db: AsyncSession, map_id: UUID) -> list[Zone]:
     result = await db.execute(select(Zone).where(Zone.floor_plan_id == map_id))
     return list(result.scalars().all())
 
+
+async def update_zone(
+    db: AsyncSession, map_id: UUID, zone_id: UUID, data: ZoneUpdate
+) -> Zone | None:
+    zone = await db.get(Zone, zone_id)
+    if zone is None or zone.floor_plan_id != map_id:
+        return None
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(zone, field, value)
+    await db.commit()
+    await db.refresh(zone)
+    return zone
+
+
+async def delete_zone(db: AsyncSession, map_id: UUID, zone_id: UUID) -> bool:
+    zone = await db.get(Zone, zone_id)
+    if zone is None or zone.floor_plan_id != map_id:
+        return False
+    await db.delete(zone)
+    await db.commit()
+    return True
+
 async def create_access_point(db: AsyncSession, map_id: UUID, data: AccessPointCreate) -> AccessPoint:
     ap = AccessPoint(floor_plan_id=map_id, **data.model_dump())
     db.add(ap)
@@ -65,3 +89,25 @@ async def create_access_point(db: AsyncSession, map_id: UUID, data: AccessPointC
 async def list_access_points(db: AsyncSession, map_id: UUID) -> list[AccessPoint]:
     result = await db.execute(select(AccessPoint).where(AccessPoint.floor_plan_id == map_id))
     return list(result.scalars().all())
+
+
+async def update_access_point(
+    db: AsyncSession, map_id: UUID, ap_id: UUID, data: AccessPointUpdate
+) -> AccessPoint | None:
+    ap = await db.get(AccessPoint, ap_id)
+    if ap is None or ap.floor_plan_id != map_id:
+        return None
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(ap, field, value)
+    await db.commit()
+    await db.refresh(ap)
+    return ap
+
+
+async def delete_access_point(db: AsyncSession, map_id: UUID, ap_id: UUID) -> bool:
+    ap = await db.get(AccessPoint, ap_id)
+    if ap is None or ap.floor_plan_id != map_id:
+        return False
+    await db.delete(ap)
+    await db.commit()
+    return True

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 
 import '../../styles/commons-map.css';
-import type { Asset, LayerKey, Role, Selection } from '../../lib/types';
+import type { AccessPoint, Asset, LayerKey, Role, Selection, Zone } from '../../lib/types';
 import { zoneMetrics } from '../../lib/metrics';
 import {
-  useAssets, useCreateZone, useDeleteAsset, useFloorPlan, useFloorPlans, useUpdateAsset,
+  useAssets, useCreateZone, useDeleteAccessPoint, useDeleteAsset, useDeleteZone,
+  useFloorPlan, useFloorPlans, useUpdateAccessPoint, useUpdateAsset, useUpdateZone,
 } from '../../lib/hooks';
 import { TopBar } from './TopBar';
 import { LayerDock } from './LayerDock';
@@ -35,6 +36,10 @@ export function CommonsMap() {
   const assetsQ = useAssets();
 
   const createZone = useCreateZone(activeFloorId ?? '');
+  const updateZone = useUpdateZone(activeFloorId ?? '');
+  const deleteZone = useDeleteZone(activeFloorId ?? '');
+  const updateAccessPoint = useUpdateAccessPoint(activeFloorId ?? '');
+  const deleteAccessPoint = useDeleteAccessPoint(activeFloorId ?? '');
   const updateAsset = useUpdateAsset();
   const deleteAsset = useDeleteAsset();
 
@@ -73,6 +78,28 @@ export function CommonsMap() {
   const onDeleteAsset = (a: Asset) => {
     if (window.confirm(`Remove “${a.name}”?`)) {
       deleteAsset.mutate(a.id);
+      setSelected(null);
+    }
+  };
+
+  const onEditZone = (z: Zone) => {
+    const name = window.prompt('Rename zone', z.name);
+    if (name && name !== z.name) updateZone.mutate({ id: z.id, name });
+  };
+  const onDeleteZone = (z: Zone) => {
+    if (window.confirm(`Delete zone “${z.name}”?`)) {
+      deleteZone.mutate(z.id);
+      setSelected(null);
+    }
+  };
+
+  const onEditAccessPoint = (ap: AccessPoint) => {
+    const name = window.prompt('Rename access point', ap.name ?? '');
+    if (name && name !== (ap.name ?? '')) updateAccessPoint.mutate({ id: ap.id, name });
+  };
+  const onDeleteAccessPoint = (ap: AccessPoint) => {
+    if (window.confirm(`Remove access point “${ap.name || ap.mac_address}”?`)) {
+      deleteAccessPoint.mutate(ap.id);
       setSelected(null);
     }
   };
@@ -173,7 +200,9 @@ export function CommonsMap() {
         <Inspector
           selection={selected} fp={fp} assets={floorAssets} isCart={isCart}
           onClose={() => setSelected(null)} onEditAsset={onEditAsset}
-          onDeleteAsset={onDeleteAsset} onStub={onStub}
+          onDeleteAsset={onDeleteAsset} onEditZone={onEditZone} onDeleteZone={onDeleteZone}
+          onEditAccessPoint={onEditAccessPoint} onDeleteAccessPoint={onDeleteAccessPoint}
+          onStub={onStub}
         />
       )}
     </div>

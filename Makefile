@@ -1,4 +1,4 @@
-.PHONY: up down test lint
+.PHONY: up down test lint seed
 
 up:
 	cd deploy && docker compose up --build
@@ -11,6 +11,9 @@ test:
 
 lint:
 	cd backend && ruff check . && ruff format --check .
+
+seed:
+	cd backend && python -m app.seed
 
 .PHONY: migrate migrate-gen migrate-down
 
